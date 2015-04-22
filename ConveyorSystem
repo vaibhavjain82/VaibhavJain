@@ -1,0 +1,28 @@
+package com.airport.baggage.beans;
+
+public class ConveyorSystem implements BaseDetails{
+
+	String node1;
+	String node2;
+	int travelTime;
+	
+	public String getNode1() {
+		return node1;
+	}
+	public void setNode1(String node1) {
+		this.node1 = node1;
+	}
+	public String getNode2() {
+		return node2;
+	}
+	public void setNode2(String node2) {
+		this.node2 = node2;
+	}
+	public int getTravelTime() {
+		return travelTime;
+	}
+	public void setTravelTime(int travelTime) {
+		this.travelTime = travelTime;
+	}
+	
+}
