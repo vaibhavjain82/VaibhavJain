@@ -1,0 +1,28 @@
+package com.airport.baggage.beans;
+
+public class BaggageDetails implements BaseDetails{
+
+	String baggageNo;
+	String entryPoint;
+	String flightID;
+	
+	public String getBaggageNo() {
+		return baggageNo;
+	}
+	public void setBaggageNo(String baggageNo) {
+		this.baggageNo = baggageNo;
+	}
+	public String getEntryPoint() {
+		return entryPoint;
+	}
+	public void setEntryPoint(String entryPoint) {
+		this.entryPoint = entryPoint;
+	}
+	public String getFlightID() {
+		return flightID;
+	}
+	public void setFlightID(String flightID) {
+		this.flightID = flightID;
+	}
+	
+}
