@@ -1,0 +1,25 @@
+package com.airport.baggage.factory;
+
+import com.airport.baggage.beans.BaggageDetails;
+import com.airport.baggage.beans.BaseDetails;
+import com.airport.baggage.beans.ConveyorSystem;
+import com.airport.baggage.beans.DepartureDetails;
+import com.airport.baggage.constants.BaggageConstants;
+
+public class SectionObjectFactory {
+
+	public BaseDetails getSectionObject(String sectionName)
+	{
+		
+		if (sectionName.equalsIgnoreCase(BaggageConstants.CONVEYOR))
+			return new ConveyorSystem();
+		
+		if (sectionName.equalsIgnoreCase(BaggageConstants.Departures))
+			return new DepartureDetails();
+		
+		if (sectionName.equalsIgnoreCase(BaggageConstants.Bags))
+			return new BaggageDetails();
+		
+		return null;
+	}
+}
