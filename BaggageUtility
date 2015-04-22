@@ -1,0 +1,129 @@
+package com.airport.baggage.utility;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
+
+import com.airport.baggage.beans.BaggageDetails;
+import com.airport.baggage.beans.BaseDetails;
+import com.airport.baggage.beans.ConveyorSystem;
+import com.airport.baggage.beans.DepartureDetails;
+import com.airport.baggage.constants.BaggageConstants;
+import com.airport.baggage.factory.SectionObjectFactory;
+
+public class BaggageUtility {
+
+	public List<BaseDetails> getSectionData (String fileName, String sectionName)
+	{
+		SectionObjectFactory factory = new SectionObjectFactory();
+		BaseDetails obj = factory.getSectionObject(sectionName);
+		List<BaseDetails> details = new ArrayList<>();
+		try (InputStream stram = getClass().getClassLoader().getResourceAsStream(fileName);)
+		{
+			boolean section = false;
+			Scanner scanner = new Scanner(stram);
+			while(scanner.hasNextLine()){
+				String line = scanner.nextLine();
+				if (line.startsWith(BaggageConstants.START_TAG) )
+				{
+					if (line.contains(sectionName))
+					{
+						section=true;
+						line = scanner.nextLine();
+					}
+					else {
+						if (section) break;
+					}
+				}
+				if (section)
+				{
+					String[] data = line.split(BaggageConstants.SPACE);
+					if (sectionName.equalsIgnoreCase(BaggageConstants.CONVEYOR))
+					{
+						ConveyorSystem system = new ConveyorSystem();
+						system.setNode1(data[0]);
+						system.setNode2(data[1]);
+						system.setTravelTime(Integer.valueOf( data[2]));
+						details.add(system);
+					}
+					if (sectionName.equalsIgnoreCase(BaggageConstants.Bags))
+					{
+						BaggageDetails system = new BaggageDetails();
+						system.setFlightID(data[2]);
+						system.setEntryPoint(data[1]);
+						system.setBaggageNo(data[0]);
+						details.add(system);
+					}
+					if (sectionName.equalsIgnoreCase(BaggageConstants.Departures))
+					{
+						DepartureDetails system = new DepartureDetails();
+						system.setFlightID(data[0]);
+						system.setFlightGate(data[1]);
+						system.setDestination(data[2]);
+						system.setFlightTime(data[3]);
+						details.add(system);
+					}
+				}
+			}
+			scanner.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 		
+		return details;
+	}
+
+	public void processBaggage(List<BaseDetails> converyorDetails,List<BaseDetails> departureDetails, List<BaseDetails> baggageDetails) {
+		
+		Iterator<BaseDetails> iterator = baggageDetails.iterator();
+		while(iterator.hasNext())
+		{
+			
+			BaggageDetails baggage = (BaggageDetails) iterator.next();
+			String source = baggage.getEntryPoint();
+			String flightID = baggage.getFlightID();
+			String destination = getDestination(flightID, departureDetails);
+			int path = getBaggageRoute(baggage.getBaggageNo(), source, destination, converyorDetails);
+			System.out.println("BaggageID = "+ baggage.getBaggageNo() + " Source : " + source + " Destination  : " + destination + " Path = " + path);
+		}
+	}
+
+	private int getBaggageRoute(String baggageID , String source, String destination,List<BaseDetails> converyorDetails) {
+		Iterator<BaseDetails> iterator = converyorDetails.iterator();
+		int path = 0;
+		while (iterator.hasNext())
+		{
+			ConveyorSystem details = (ConveyorSystem) iterator.next();
+			if (details.getNode1().equalsIgnoreCase(source))
+			{
+				String tmpDestination = details.getNode2();
+				if (tmpDestination.equalsIgnoreCase(destination))
+				{
+					path+=details.getTravelTime();
+				}
+				else
+				{
+					getBaggageRoute(baggageID, source, tmpDestination, converyorDetails);
+				}
+			}
+		}
+		return path;
+	}
+
+	private String getDestination(String flightID,List<BaseDetails> departureDetails) {
+		String destination = null;
+		Iterator<BaseDetails> iterator = departureDetails.iterator();
+		while(iterator.hasNext())
+		{
+			DepartureDetails departure = (DepartureDetails) iterator.next();
+			if (departure.getFlightID().equalsIgnoreCase(flightID))
+			{
+				destination = departure.getFlightGate();
+				break;
+			}
+		}
+		return destination;
+	}
+
+}
