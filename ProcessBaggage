@@ -1,0 +1,21 @@
+package com.airport.baggage;
+
+import java.util.List;
+
+import com.airport.baggage.beans.BaseDetails;
+import com.airport.baggage.constants.BaggageConstants;
+import com.airport.baggage.utility.BaggageUtility;
+
+
+public class ProcessBaggage {
+
+	public static void main(String[] args) {
+		
+		BaggageUtility utility = new BaggageUtility();
+		List<BaseDetails> converyorDetails = utility.getSectionData(BaggageConstants.FILE_NAME, BaggageConstants.CONVEYOR);
+		List<BaseDetails> departureDetails = utility.getSectionData(BaggageConstants.FILE_NAME, BaggageConstants.Departures);
+		List<BaseDetails> baggageDetails = utility.getSectionData(BaggageConstants.FILE_NAME, BaggageConstants.Bags);
+		utility.processBaggage(converyorDetails, departureDetails, baggageDetails);
+	}
+	
+}
